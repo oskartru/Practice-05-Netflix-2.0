@@ -1,0 +1,44 @@
+<!doctype html><html><head><meta charset="utf-8">
+    <title>TMDb Token Test</title>
+    <!-- uses the same token as the app -->
+    <script src="config.js"></script>
+</head>
+<body>
+    <h1>TMDb Token Test</h1>
+    <button id="popular">Get Popular Movies</button>
+    <p id="status"></p>
+    <ol id="list"></ol>
+
+    <script>
+        document.getElementById('popular').addEventListener('click', async () => {
+            const status = document.getElementById('status');
+            const list = document.getElementById('list');
+            status.textContent = "Loading...";
+            list.innerHTML = "";
+
+            const options = {
+                method: 'GET',
+                headers: {
+                    accept: 'application/json',
+                    Authorization: 'Bearer ' + TMDB_TOKEN
+                }
+            };
+
+            try {
+                const response = await fetch('https://api.themoviedb.org/3/movie/popular', options);
+                if (!response.ok) throw new Error(`HTTP ${response.status} - token is probably invalid`);
+                const data = await response.json();
+
+                status.textContent = `Token works! ${data.results.length} popular movies:`;
+                data.results.forEach(movie => {
+                    const li = document.createElement('li');
+                    li.textContent = `${movie.title} (${movie.release_date})`;
+                    list.appendChild(li);
+                });
+            } catch (err) {
+                status.textContent = "Error: " + err.message;
+            }
+        });
+    </script>
+</body>
+</html>
